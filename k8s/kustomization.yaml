@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- deployment.yaml
+- service.yaml
+- route.yaml
+commonLabels:
+  app: express-store-app
+  app.kubernetes.io/instance: express-store-app-instance
+  app.kubernetes.io/name: express-store-app
+images:
+- name: quay.io/upslopeio/express-sample-app
+  newName: quay.io/danielescaramuzzi/squad-3-node-app

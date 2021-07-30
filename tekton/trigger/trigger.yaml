@@ -1,0 +1,109 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vcs-trigger-express-store
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: vcs-trigger-express-store
+rules:
+  - apiGroups:
+      - triggers.tekton.dev
+    resources:
+      - eventlisteners
+      - triggerbindings
+      - triggertemplates
+    verbs:
+      - get
+  - apiGroups:
+      - tekton.dev
+    resources:
+      - pipelineruns
+      - pipelineresources
+    verbs:
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vcs-trigger-express-store
+subjects:
+  - kind: ServiceAccount
+    name: vcs-trigger-express-store
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vcs-trigger-express-store
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: vcs-trigger-express-store
+spec:
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: express-store-app-pipeline-
+      spec:
+        serviceAccountName: build-bot
+        params:
+          - name: image-repo
+            value: quay.io/danielescaramuzzi/squad-3-node-app
+          - name: app-name
+            value: express-store--app
+        pipelineRef:
+          name: express-store-app-pipeline
+        workspaces:
+          - name: pipeline-shared-data
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 1Gi
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: vcs-trigger-express-store
+spec:
+  params:
+    - name: gitrepositoryurl
+      value: $(body.repository.url)
+    - name: gitrepositoryname
+      value: $(body.repository.name)
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: vcs-trigger-express-store
+spec:
+  serviceAccountName: vcs-trigger-express-store
+  triggers:
+    - bindings:
+        - ref: vcs-trigger-express-store
+      template:
+        name: vcs-trigger-express-store
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: vcs-trigger-express-store
+spec:
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: el-vcs-trigger-express-store
+    weight: 100
+

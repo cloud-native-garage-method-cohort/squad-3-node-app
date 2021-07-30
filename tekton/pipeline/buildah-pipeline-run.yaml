@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: express-store-app-pipeline-
+spec:
+  serviceAccountName: build-bot
+  pipelineRef:
+    name: express-store-app-pipeline
+  params:
+    - name: image-repo
+      value: quay.io/danielescaramuzzi/squad-3-node-app
+    - name: app-name
+      value: express-store-app
+  workspaces:
+  - name: pipeline-shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
