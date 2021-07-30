@@ -3,12 +3,8 @@ imagePullSecrets:
 - name: build-bot-dockercfg-lsvxd
 kind: ServiceAccount
 metadata:
-  creationTimestamp: "2021-07-30T11:13:22Z"
   name: build-bot
   namespace: squad-3-final-assignment
-  resourceVersion: "8249940"
-  selfLink: /api/v1/namespaces/squad-3-final-assignment/serviceaccounts/build-bot
-  uid: b1f1f4ff-26b6-4c2b-8638-497daf64ad66
 secrets:
 - name: build-bot-token-cc68q
 - name: build-bot-dockercfg-lsvxd
