@@ -9,3 +9,4 @@ secrets:
 - name: build-bot-token-cc68q
 - name: build-bot-dockercfg-lsvxd
 - name: quay-io-credentials
+- name: quay-io-credentials-react

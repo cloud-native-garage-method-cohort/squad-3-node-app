@@ -59,7 +59,7 @@ spec:
           - name: image-repo
             value: quay.io/danielescaramuzzi/squad-3-node-app
           - name: app-name
-            value: express-store--app
+            value: express-store-app
         pipelineRef:
           name: express-store-app-pipeline
         workspaces:
